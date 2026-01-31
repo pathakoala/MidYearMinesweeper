@@ -16,9 +16,9 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) {
-        int sceneWidth = 1920;
+        int sceneWidth = 1720;
         int sceneHeight = 1080;
-        HexGrid grid = new HexGrid(6, sceneWidth/2, sceneHeight/2);
+        HexGrid grid = new HexGrid(2, sceneWidth/2, sceneHeight/2);
 
         Scene scene = new Scene(grid, sceneWidth,sceneHeight);
 
