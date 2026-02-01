@@ -40,14 +40,13 @@ public class HexGrid extends Pane {
                 sideNum++;
             }
         }
-        addMines(10); // this can be changed later depending on difficulty
-    }
-    // random addition of mines
-    private void addMines(int mineCount) {
-        Collections.shuffle(tiles);
 
+        Collections.shuffle(tiles);
+        int mineCount = 10;
         for (int i = 0; i < mineCount && i < tiles.size(); i++) {
             tiles.get(i).placeMine(new Mine());
-        }
+        } // this can be changed later depending on difficulty
     }
+    // random addition of mines
+    
 }

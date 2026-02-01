@@ -26,7 +26,9 @@ public class HexTile extends Polygon{
     }
     // All of these methods pertain to the function of mines, (grey is safe/ red is "exploding")
     public void reveal() {
-        if (reveal) return;
+        if (reveal) {
+            return; 
+        }
         reveal = true;
 
         if (hasMine()) {
