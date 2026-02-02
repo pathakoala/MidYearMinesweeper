@@ -6,10 +6,18 @@ public class HexTile extends Polygon{
     public int locationMetric1;
     public int locationMetric2;
 
+    public double xCenter;
+    public double yCenter;
+
+    public int adjacentMines;
+
     private Mine m;
     private boolean reveal = false;
 
     public HexTile(double xCenter, double yCenter, double size) {
+        this.xCenter = xCenter;
+        this.yCenter = yCenter;
+
         for(int i = 0; i<6; i++) {
             double angle1 = Math.toRadians(60*i);
             double x = xCenter + size*Math.cos(angle1);
@@ -37,11 +45,12 @@ public class HexTile extends Polygon{
             setFill(Color.LIGHTGRAY); 
         }
     }
+
     public void placeMine(Mine m) {
         this.m = m;
     }
 
-    public boolean hasMine() {
+    public boolean hasMine() {  
         return m != null;
     }
 

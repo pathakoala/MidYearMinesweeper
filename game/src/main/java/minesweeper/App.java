@@ -18,7 +18,7 @@ public class App extends Application {
     public void start(Stage stage) {
         int sceneWidth = 1720;
         int sceneHeight = 1080;
-        HexGrid grid = new HexGrid(2, sceneWidth/2, sceneHeight/2);
+        HexGrid grid = new HexGrid(5, sceneWidth/2, sceneHeight/2);
 
         Scene scene = new Scene(grid, sceneWidth,sceneHeight);
 

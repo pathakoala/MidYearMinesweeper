@@ -46,7 +46,33 @@ public class HexGrid extends Pane {
         for (int i = 0; i < mineCount && i < tiles.size(); i++) {
             tiles.get(i).placeMine(new Mine());
         } // this can be changed later depending on difficulty
+         // random addition of mines
+
+         for(HexTile tile1: tiles) {
+            tile1.adjacentMines = hexAdjacents(tile1);
+         }
     }
-    // random addition of mines
+   
+    public int hexAdjacents(HexTile tile1) {
+        ArrayList<HexTile> ans = new ArrayList<HexTile>();
+        double[][] sixCords = new double[6][2];
+        int degrees = 30;
+        for(int i = 0; i<6; i++) {
+            sixCords[i][0] = tile1.xCenter + Math.sqrt(3)*size*Math.cos(Math.toRadians(degrees));
+            sixCords[i][0] = tile1.yCenter + Math.sqrt(3)*size*Math.sin(Math.toRadians(degrees));
+            degrees += 60;
+        }
+
+        for(HexTile tile: tiles) {
+            for(int i = 0; i<6; i++) {
+            if(tile.xCenter == sixCords[i][0] && tile.yCenter == sixCords[i][1]) {
+                if(tile.hasMine()) {
+                    ans.add(tile);
+                }
+            }
+        }
+        }
+        return ans.size();
+    }
     
 }
