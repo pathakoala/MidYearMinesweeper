@@ -13,7 +13,7 @@ public class HexGrid extends Pane {
     public HexGrid(int radius, double xCenter, double yCenter) {
         HexTile tile = new HexTile(xCenter, yCenter, size);
         tiles.add(tile);
-        getChildren().add(tile);
+        getChildren().add(tile.hex);
 
         for (int i = 0; i <= radius; i++) {
             double X = xCenter;
@@ -28,8 +28,11 @@ public class HexGrid extends Pane {
                 Y = Y + Math.sqrt(3) * size * Math.sin(Math.toRadians(angle));
 
                 HexTile tiler = new HexTile(X, Y, size);
-                tiles.add(tiler);
-                getChildren().add(tiler);
+
+                double rand = Math.random()*1000;
+                if(rand < 400) {
+                    tiler.placeMine(new Mine());
+                }
 
                 if (sideNum % i == 0) {
                     angle -= 60;
@@ -38,15 +41,10 @@ public class HexGrid extends Pane {
                 }
 
                 sideNum++;
+                 tiles.add(tiler);
+                getChildren().add(tiler.hex);
             }
         }
-
-        Collections.shuffle(tiles);
-        int mineCount = 10;
-        for (int i = 0; i < mineCount && i < tiles.size(); i++) {
-            tiles.get(i).placeMine(new Mine());
-        } // this can be changed later depending on difficulty
-         // random addition of mines
 
          for(HexTile tile1: tiles) {
             tile1.adjacentMines = hexAdjacents(tile1);
@@ -59,7 +57,7 @@ public class HexGrid extends Pane {
         int degrees = 30;
         for(int i = 0; i<6; i++) {
             sixCords[i][0] = tile1.xCenter + Math.sqrt(3)*size*Math.cos(Math.toRadians(degrees));
-            sixCords[i][0] = tile1.yCenter + Math.sqrt(3)*size*Math.sin(Math.toRadians(degrees));
+            sixCords[i][1] = tile1.yCenter + Math.sqrt(3)*size*Math.sin(Math.toRadians(degrees));
             degrees += 60;
         }
 
