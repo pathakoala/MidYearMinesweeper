@@ -13,7 +13,7 @@ public class HexGrid extends Pane {
     public HexGrid(int radius, double xCenter, double yCenter) {
         HexTile tile = new HexTile(xCenter, yCenter, size);
         tiles.add(tile);
-        getChildren().add(tile.hex);
+        getChildren().add(tile);
 
         for (int i = 0; i <= radius; i++) {
             double X = xCenter;
@@ -30,7 +30,7 @@ public class HexGrid extends Pane {
                 HexTile tiler = new HexTile(X, Y, size);
 
                 double rand = Math.random()*1000;
-                if(rand < 400) {
+                if(rand < 450) {
                     tiler.placeMine(new Mine());
                 }
 
@@ -41,8 +41,8 @@ public class HexGrid extends Pane {
                 }
 
                 sideNum++;
-                 tiles.add(tiler);
-                getChildren().add(tiler.hex);
+                tiles.add(tiler);
+                getChildren().add(tiler);
             }
         }
 
@@ -63,7 +63,7 @@ public class HexGrid extends Pane {
 
         for(HexTile tile: tiles) {
             for(int i = 0; i<6; i++) {
-            if(tile.xCenter == sixCords[i][0] && tile.yCenter == sixCords[i][1]) {
+            if((int)tile.xCenter == (int)sixCords[i][0] && (int)tile.yCenter == (int)sixCords[i][1]) {
                 if(tile.hasMine()) {
                     ans.add(tile);
                 }

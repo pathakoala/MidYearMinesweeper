@@ -41,8 +41,10 @@ public class HexTile extends Group{
         label.setFont(Font.font(14));
         label.setFill(Color.BLACK);
 
-        label.setX(xCenter);
-        label.setY(yCenter);
+        label.setX(xCenter-4);
+        label.setY(yCenter+4);
+
+        getChildren().addAll(hex, label);
 
         // clicking will reveal whether safe or not
         this.setOnMouseClicked(e -> reveal());
@@ -60,9 +62,7 @@ public class HexTile extends Group{
             hex.setFill(Color.RED);       
         } else {
             hex.setFill(Color.LIGHTGRAY); 
-            if(adjacentMines >0) {
                 label.setText("" + adjacentMines);
-            }
         }
     }
 
