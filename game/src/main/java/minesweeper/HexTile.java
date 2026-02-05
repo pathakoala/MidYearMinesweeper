@@ -1,11 +1,14 @@
 package minesweeper;
+
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
-import javafx.scene.text.Text;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
-public class HexTile extends Group{
+public class HexTile extends Group {
+    private HexGrid grid;
+
     public int locationMetric1;
     public int locationMetric2;
 
@@ -20,18 +23,19 @@ public class HexTile extends Group{
     public Polygon hex;
     public Text label;
 
-    public HexTile(double xCenter, double yCenter, double size) {
+    public HexTile(double xCenter, double yCenter, double size, HexGrid grid) {
+        this.grid = grid;
         this.xCenter = xCenter;
         this.yCenter = yCenter;
 
         hex = new Polygon();
 
-        for(int i = 0; i<6; i++) {
-            double angle1 = Math.toRadians(60*i);
-            double x = xCenter + size*Math.cos(angle1);
-            double y = yCenter + size*Math.sin(angle1);
+        for (int i = 0; i < 6; i++) {
+            double angle1 = Math.toRadians(60 * i);
+            double x = xCenter + size * Math.cos(angle1);
+            double y = yCenter + size * Math.sin(angle1);
 
-            hex.getPoints().addAll(x,y);
+            hex.getPoints().addAll(x, y);
         }
 
         hex.setFill(Color.BEIGE);
@@ -41,28 +45,33 @@ public class HexTile extends Group{
         label.setFont(Font.font(14));
         label.setFill(Color.BLACK);
 
-        label.setX(xCenter-4);
-        label.setY(yCenter+4);
+        label.setX(xCenter - 4);
+        label.setY(yCenter + 4);
 
         getChildren().addAll(hex, label);
 
         // clicking will reveal whether safe or not
         this.setOnMouseClicked(e -> reveal());
     }
-    
-    
-    // All of these methods pertain to the function of mines, (grey is safe/ red is "exploding")
+
+    // All of these methods pertain to the function of mines, (grey is safe/ red is
+    // "exploding")
     public void reveal() {
-        if (reveal) {
-            return; 
-        }
+        if (reveal)
+            return;
         reveal = true;
 
         if (hasMine()) {
-            hex.setFill(Color.RED);       
+            hex.setFill(Color.RED);
+            return;
+        }
+
+        hex.setFill(Color.LIGHTGRAY);
+
+        if (adjacentMines > 0) {
+            label.setText("" + adjacentMines);
         } else {
-            hex.setFill(Color.LIGHTGRAY); 
-                label.setText("" + adjacentMines);
+            zeroReveal();
         }
     }
 
@@ -70,11 +79,20 @@ public class HexTile extends Group{
         this.m = m;
     }
 
-    public boolean hasMine() {  
+    public boolean hasMine() {
         return m != null;
     }
 
     public boolean isRevealed() {
         return reveal;
+    }
+
+    // reveal of zeroes
+    private void zeroReveal() {
+        for (HexTile aTile : grid.getAdjacent(this)) {
+            if (!aTile.isRevealed() && !aTile.hasMine()) {
+                aTile.reveal();
+            }
+        }
     }
 }

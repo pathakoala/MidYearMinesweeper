@@ -1,7 +1,6 @@
 package minesweeper;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javafx.scene.layout.Pane;
@@ -11,7 +10,7 @@ public class HexGrid extends Pane {
     private List<HexTile> tiles = new ArrayList<>();
 
     public HexGrid(int radius, double xCenter, double yCenter) {
-        HexTile tile = new HexTile(xCenter, yCenter, size);
+        HexTile tile = new HexTile(xCenter, yCenter, size, this);
         tiles.add(tile);
         getChildren().add(tile);
 
@@ -27,10 +26,10 @@ public class HexGrid extends Pane {
                 X = X + Math.sqrt(3) * size * Math.cos(Math.toRadians(angle));
                 Y = Y + Math.sqrt(3) * size * Math.sin(Math.toRadians(angle));
 
-                HexTile tiler = new HexTile(X, Y, size);
+                HexTile tiler = new HexTile(X, Y, size, this);
 
-                double rand = Math.random()*1000;
-                if(rand < 450) {
+                double rand = Math.random() * 1000;
+                if (rand < 180) {
                     tiler.placeMine(new Mine());
                 }
 
@@ -46,31 +45,57 @@ public class HexGrid extends Pane {
             }
         }
 
-         for(HexTile tile1: tiles) {
+        for (HexTile tile1 : tiles) {
             tile1.adjacentMines = hexAdjacents(tile1);
-         }
+        }
     }
-   
+
     public int hexAdjacents(HexTile tile1) {
         ArrayList<HexTile> ans = new ArrayList<HexTile>();
         double[][] sixCords = new double[6][2];
         int degrees = 30;
-        for(int i = 0; i<6; i++) {
-            sixCords[i][0] = tile1.xCenter + Math.sqrt(3)*size*Math.cos(Math.toRadians(degrees));
-            sixCords[i][1] = tile1.yCenter + Math.sqrt(3)*size*Math.sin(Math.toRadians(degrees));
+        for (int i = 0; i < 6; i++) {
+            sixCords[i][0] = tile1.xCenter + Math.sqrt(3) * size * Math.cos(Math.toRadians(degrees));
+            sixCords[i][1] = tile1.yCenter + Math.sqrt(3) * size * Math.sin(Math.toRadians(degrees));
             degrees += 60;
         }
 
-        for(HexTile tile: tiles) {
-            for(int i = 0; i<6; i++) {
-            if((int)tile.xCenter == (int)sixCords[i][0] && (int)tile.yCenter == (int)sixCords[i][1]) {
-                if(tile.hasMine()) {
-                    ans.add(tile);
+        for (HexTile tile : tiles) {
+            for (int i = 0; i < 6; i++) {
+                if ((int) tile.xCenter == (int) sixCords[i][0] && (int) tile.yCenter == (int) sixCords[i][1]) {
+                    if (tile.hasMine()) {
+                        ans.add(tile);
+                    }
                 }
             }
         }
-        }
         return ans.size();
     }
-    
+    // this method stores all adjacent tiles
+    public List<HexTile> getAdjacent(HexTile tile1) {
+        List<HexTile> touching = new ArrayList<>();
+
+        double[][] sixCords = new double[6][2];
+        int degrees = 30;
+
+        for (int i = 0; i < 6; i++) {
+            sixCords[i][0] = tile1.xCenter + Math.sqrt(3) * size * Math.cos(Math.toRadians(degrees));
+            sixCords[i][1] = tile1.yCenter + Math.sqrt(3) * size * Math.sin(Math.toRadians(degrees));
+            degrees += 60;
+        }
+
+        double EPS = 1.0;
+
+        for (HexTile tile : tiles) {
+            for (int i = 0; i < 6; i++) {
+                if (Math.abs(tile.xCenter - sixCords[i][0]) < EPS &&
+                        Math.abs(tile.yCenter - sixCords[i][1]) < EPS) {
+                    touching.add(tile);
+                }
+            }
+        }
+
+        return touching;
+    }
+
 }
