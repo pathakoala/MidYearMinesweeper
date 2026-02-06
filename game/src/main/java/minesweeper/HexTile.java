@@ -1,10 +1,12 @@
 package minesweeper;
 
 import javafx.scene.Group;
+import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.input.MouseButton;
 
 public class HexTile extends Group {
     private HexGrid grid;
@@ -19,9 +21,11 @@ public class HexTile extends Group {
 
     private Mine m;
     private boolean reveal = false;
+    private boolean flagged = false;
 
     public Polygon hex;
     public Text label;
+    private Text flag;
 
     public HexTile(double xCenter, double yCenter, double size, HexGrid grid) {
         this.grid = grid;
@@ -50,13 +54,29 @@ public class HexTile extends Group {
 
         getChildren().addAll(hex, label);
 
+        flag = new Text("F");
+        flag.setFont(Font.font(18));
+        flag.setFill(Color.DARKRED);
+        flag.setX(xCenter - 5);
+        flag.setY(yCenter + 6);
+        flag.setVisible(false);
+
+        getChildren().add(flag);
+
         // clicking will reveal whether safe or not
-        this.setOnMouseClicked(e -> reveal());
+        this.setOnMouseClicked(e -> {
+            if (e.getButton() == MouseButton.SECONDARY) {
+                makeFlag();
+            } else if (e.getButton() == MouseButton.PRIMARY) {
+                reveal();
+            }
+        });
     }
 
     // All of these methods pertain to the function of mines, (grey is safe/ red is
     // "exploding")
     public void reveal() {
+        if (reveal || flagged) return;
         if (reveal)
             return;
         reveal = true;
@@ -90,9 +110,21 @@ public class HexTile extends Group {
     // reveal of zeroes
     private void zeroReveal() {
         for (HexTile aTile : grid.getAdjacent(this)) {
-            if (!aTile.isRevealed() && !aTile.hasMine()) {
+            if (!aTile.isRevealed() && !aTile.hasMine() && !aTile.isFlagged()) {
                 aTile.reveal();
             }
         }
+    }
+
+    public void makeFlag() {
+        if (reveal)
+            return;
+
+        flagged = !flagged;
+        flag.setVisible(flagged);
+    }
+
+    public boolean isFlagged() {
+        return flagged;
     }
 }

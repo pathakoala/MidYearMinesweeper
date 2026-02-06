@@ -29,7 +29,7 @@ public class HexGrid extends Pane {
                 HexTile tiler = new HexTile(X, Y, size, this);
 
                 double rand = Math.random() * 1000;
-                if (rand < 180) {
+                if (rand < 330) {
                     tiler.placeMine(new Mine());
                 }
 
