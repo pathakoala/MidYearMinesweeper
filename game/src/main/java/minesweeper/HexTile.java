@@ -83,6 +83,7 @@ public class HexTile extends Group {
 
         if (hasMine()) {
             hex.setFill(Color.RED);
+            grid.onDefeat();
             return;
         }
 

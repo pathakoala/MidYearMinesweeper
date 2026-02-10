@@ -98,4 +98,8 @@ public class HexGrid extends Pane {
         return touching;
     }
 
+    public void onDefeat() {
+        App.showDefeatScreen();
+    }
+
 }
