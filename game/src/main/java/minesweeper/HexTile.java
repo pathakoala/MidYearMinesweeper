@@ -1,6 +1,8 @@
 package minesweeper;
 
 import javafx.scene.Group;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
@@ -25,7 +27,7 @@ public class HexTile extends Group {
 
     public Polygon hex;
     public Text label;
-    private Text flag;
+    private ImageView flagImage;
 
     public HexTile(double xCenter, double yCenter, double size, HexGrid grid) {
         this.grid = grid;
@@ -54,14 +56,16 @@ public class HexTile extends Group {
 
         getChildren().addAll(hex, label);
 
-        flag = new Text("F");
-        flag.setFont(Font.font(18));
-        flag.setFill(Color.DARKRED);
-        flag.setX(xCenter - 5);
-        flag.setY(yCenter + 6);
-        flag.setVisible(false);
 
-        getChildren().add(flag);
+        
+        Image flagImg = new Image(getClass().getResourceAsStream("/minesweeper/flag.png"));
+        flagImage = new ImageView(flagImg);
+        flagImage.setFitWidth(20);  // Adjust size as needed
+        flagImage.setFitHeight(20);
+        flagImage.setLayoutX(xCenter - 10);
+        flagImage.setLayoutY(yCenter - 10);
+        flagImage.setVisible(false);
+        getChildren().add(flagImage);
 
         // clicking will reveal whether safe or not
         this.setOnMouseClicked(e -> {
@@ -121,7 +125,7 @@ public class HexTile extends Group {
             return;
 
         flagged = !flagged;
-        flag.setVisible(flagged);
+        flagImage.setVisible(flagged);
     }
 
     public boolean isFlagged() {

@@ -63,7 +63,7 @@ public class HexGrid extends Pane {
 
         for (HexTile tile : tiles) {
             for (int i = 0; i < 6; i++) {
-                if ((int) tile.xCenter == (int) sixCords[i][0] && (int) tile.yCenter == (int) sixCords[i][1]) {
+                if (Math.abs(tile.xCenter-sixCords[i][0]) < 1 && Math.abs(tile.yCenter - sixCords[i][1]) < 1){
                     if (tile.hasMine()) {
                         ans.add(tile);
                     }
