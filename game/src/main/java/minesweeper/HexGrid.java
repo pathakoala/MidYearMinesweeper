@@ -8,7 +8,6 @@ import javafx.scene.layout.Pane;
 public class HexGrid extends Pane {
     private static final double size = 25;
     private List<HexTile> tiles = new ArrayList<>();
-    private boolean firstClick = true;
 
     public HexGrid(int radius, double xCenter, double yCenter) {
         HexTile tile = new HexTile(xCenter, yCenter, size, this);
@@ -72,7 +71,6 @@ public class HexGrid extends Pane {
         }
         return ans.size();
     }
-
     // this method stores all adjacent tiles
     public List<HexTile> getAdjacent(HexTile tile1) {
         List<HexTile> touching = new ArrayList<>();
@@ -86,12 +84,10 @@ public class HexGrid extends Pane {
             degrees += 60;
         }
 
-        double EPS = 1.0;
-
         for (HexTile tile : tiles) {
             for (int i = 0; i < 6; i++) {
-                if (Math.abs(tile.xCenter - sixCords[i][0]) < EPS &&
-                        Math.abs(tile.yCenter - sixCords[i][1]) < EPS) {
+                if (Math.abs(tile.xCenter - sixCords[i][0]) < 1.0 &&
+                        Math.abs(tile.yCenter - sixCords[i][1]) < 1.0) {
                     touching.add(tile);
                 }
             }
@@ -100,33 +96,8 @@ public class HexGrid extends Pane {
         return touching;
     }
 
-    public void handleFirstClick(HexTile clicked) {
-        if (!firstClick)
-            return;
-
-        firstClick = false;
-
-        // remove all existing mines
-        for (HexTile t : tiles) {
-            t.placeMine(null);
-        }
-
-        // replace mines
-        for (HexTile t : tiles) {
-            if (t == clicked)
-                continue;
-            if (getAdjacent(clicked).contains(t))
-                continue;
-
-            double rand = Math.random() * 1000;
-            if (rand < 330) {
-                t.placeMine(new Mine());
-            }
-        }
-
-        // recompute adjacent mine counts
-        for (HexTile t : tiles) {
-            t.adjacentMines = hexAdjacents(t);
-        }
+    public void onDefeat() {
+        App.showDefeatScreen();
     }
+
 }

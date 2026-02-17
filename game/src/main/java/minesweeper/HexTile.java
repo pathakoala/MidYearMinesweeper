@@ -76,7 +76,6 @@ public class HexTile extends Group {
     // All of these methods pertain to the function of mines, (grey is safe/ red is
     // "exploding")
     public void reveal() {
-        grid.handleFirstClick(this);
         if (reveal || flagged) return;
         if (reveal)
             return;
@@ -84,6 +83,7 @@ public class HexTile extends Group {
 
         if (hasMine()) {
             hex.setFill(Color.RED);
+            grid.onDefeat();
             return;
         }
 
@@ -108,7 +108,7 @@ public class HexTile extends Group {
         return reveal;
     }
 
-    // reveal of adjacent zeroes
+    // reveal of zeroes
     private void zeroReveal() {
         for (HexTile aTile : grid.getAdjacent(this)) {
             if (!aTile.isRevealed() && !aTile.hasMine() && !aTile.isFlagged()) {
