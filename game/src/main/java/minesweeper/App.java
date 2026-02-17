@@ -22,6 +22,7 @@ public class App extends Application {
     private HexGrid grid;
     private BorderPane rootLayout;
     private StackPane centerpane;
+    private StackPane gameOverlay;
 
     private int sceneWidth = 1720;
     private int sceneHeight = 720;
@@ -34,7 +35,7 @@ public class App extends Application {
         rootLayout = new BorderPane();
         rootLayout.setPadding(new Insets(10));
 
-        // Top-left restart button
+        // restart button
         Button restartButton = new Button("Restart Game");
         restartButton.setOnAction(e -> restartGame());
         restartButton.setPrefHeight(40);
@@ -43,18 +44,22 @@ public class App extends Application {
 
         HBox topBar = new HBox();
         topBar.setAlignment(Pos.CENTER_LEFT);
-        topBar.setPadding(new Insets(20, 20, 0, 20)); // top, right, bottom, left
+        topBar.setPadding(new Insets(20, 20, 0, 20)); 
         topBar.getChildren().add(restartButton);
-
-rootLayout.setTop(topBar);
-
 
         rootLayout.setTop(topBar);
 
-        // Center grid pane
+        // Center grid pane with overlay
         centerpane = new StackPane();
         centerpane.setAlignment(Pos.CENTER);
         centerpane.setStyle("-fx-background-color: transparent;");
+
+        gameOverlay = new StackPane();
+        gameOverlay.setAlignment(Pos.CENTER);
+        gameOverlay.setStyle("-fx-background-color: transparent;");
+        gameOverlay.setVisible(false);
+
+        centerpane.getChildren().add(gameOverlay); // Add overlay on top
 
         rootLayout.setCenter(centerpane);
 
@@ -70,33 +75,40 @@ rootLayout.setTop(topBar);
 
     private void createNewGame() {
         centerpane.getChildren().clear();
-        grid = new HexGrid(5, sceneWidth / 2, sceneHeight / 2);
+        grid = new HexGrid(2, sceneWidth / 2+100, sceneHeight /2 +50, this);
         centerpane.getChildren().add(grid);
+
+        //re-add the overlay
+        gameOverlay = new StackPane();
+        gameOverlay.setAlignment(Pos.CENTER);
+        gameOverlay.setStyle("-fx-background-color: transparent;");
+        gameOverlay.setVisible(false);
+        centerpane.getChildren().add(gameOverlay);
     }
 
     private void restartGame() {
         createNewGame();
     }
 
-    public static void showDefeatScreen() {
-        Stage defeatStage = new Stage();
-        defeatStage.initModality(Modality.APPLICATION_MODAL);
-        defeatStage.initOwner(primaryStage);
-        defeatStage.setTitle("Game Over");
+    public void showGameOverOverlay(boolean won) {
+        gameOverlay.getChildren().clear();
 
-        VBox root = new VBox(30);
-        root.setAlignment(Pos.CENTER);
-        root.setStyle("-fx-padding: 50; -fx-background-color: #2a2a2a;");
+        VBox overlayContent = new VBox(20);
+        overlayContent.setAlignment(Pos.CENTER_RIGHT);
+        overlayContent.setStyle("-fx-padding: 50;");
 
-        Label defeatLabel = new Label("You Lost!");
-        defeatLabel.setFont(Font.font("Arial", FontWeight.BOLD, 96));
-        defeatLabel.setTextFill(Color.RED);
+        Label messageLabel = new Label(won ? "You Won!" : "Game Over");
+        messageLabel.setFont(Font.font("Arial", FontWeight.BOLD, 72));
+        messageLabel.setTextFill(won ? Color.GREEN : Color.RED);
 
-        root.getChildren().add(defeatLabel);
+        Label subLabel = new Label(won ? "Congratulations!" : "Better luck next time!");
+        subLabel.setFont(Font.font("Arial", 24));
+        subLabel.setTextFill(Color.BLACK);
 
-        Scene scene = new Scene(root, 600, 400);
-        defeatStage.setScene(scene);
-        defeatStage.showAndWait();
+        overlayContent.getChildren().addAll(messageLabel, subLabel);
+
+        gameOverlay.getChildren().add(overlayContent);
+        gameOverlay.setVisible(true);
     }
 
     public static void main(String[] args) {

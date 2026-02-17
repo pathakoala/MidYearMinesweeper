@@ -2,15 +2,22 @@ package minesweeper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 import javafx.scene.layout.Pane;
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 
 public class HexGrid extends Pane {
     private static final double size = 25;
     private List<HexTile> tiles = new ArrayList<>();
     private boolean firstClick = true;
+    private App app;
+    private boolean gameEnded = false;
 
-    public HexGrid(int radius, double xCenter, double yCenter) {
+    public HexGrid(int radius, double xCenter, double yCenter, App app) {
+        this.app = app;
+
         HexTile tile = new HexTile(xCenter, yCenter, size, this);
         tiles.add(tile);
         getChildren().add(tile);
@@ -36,8 +43,6 @@ public class HexGrid extends Pane {
 
                 if (sideNum % i == 0) {
                     angle -= 60;
-                    // decreases angle appropriately when we have reached i "hextiles" on the side
-                    // of the larger tiles
                 }
 
                 sideNum++;
@@ -72,7 +77,7 @@ public class HexGrid extends Pane {
         }
         return ans.size();
     }
-    // this method stores all adjacent tiles
+
     public List<HexTile> getAdjacent(HexTile tile1) {
         List<HexTile> touching = new ArrayList<>();
 
@@ -128,7 +133,83 @@ public class HexGrid extends Pane {
     }
 
     public void onDefeat() {
-        App.showDefeatScreen();
+        if (gameEnded) return;
+        gameEnded = true;
+
+        // shuffle mine tiles in order to reveal them randomly (like the google one)
+        List<HexTile> mineTiles = new ArrayList<>();
+        for (HexTile t : tiles) {
+            if (t.hasMine()) {
+                mineTiles.add(t);
+            }
+        }
+
+        Collections.shuffle(mineTiles);
+
+        // Animate reveal of each mine with delay
+        for (int i = 0; i < mineTiles.size(); i++) {
+            HexTile mineTile = mineTiles.get(i);
+            PauseTransition delay = new PauseTransition(Duration.millis(100 * (i + 1)));
+            delay.setOnFinished(e -> {
+                mineTile.revealMine();
+            });
+            delay.play();
+        }
+
+        
+        double totalAnimationTime = mineTiles.size() * 100 + 300; // Add buffer
+        PauseTransition showOverlay = new PauseTransition(Duration.millis(totalAnimationTime));
+        showOverlay.setOnFinished(e -> {
+            app.showGameOverOverlay(false);
+        });
+        showOverlay.play();
     }
 
+    public void checkWinCondition() {
+        if (gameEnded) return;
+
+        // Count the safe (non-flagged) tiles. 
+        int safeTiles = 0;
+        for (HexTile t : tiles) {
+            if (!t.isRevealed() && !t.hasMine() && !t.isFlagged()) {
+                safeTiles++;
+            }
+        }
+
+        // If all safe tiles are revealed, the user wins!
+        if (safeTiles == 0) {
+            onWin();
+        }
+    }
+
+    public void onWin() {
+        if (gameEnded) return;
+        gameEnded = true;
+
+        // animate reveal of unrevealed mines (the ones with flags)
+        List<HexTile> unrevealedMines = new ArrayList<>();
+        for (HexTile t : tiles) {
+            if (t.hasMine() && !t.isRevealed()) {
+                unrevealedMines.add(t);
+            }
+        }
+
+        Collections.shuffle(unrevealedMines);
+
+        // Animated reveal of each mine with delay
+        for (int i = 0; i < unrevealedMines.size(); i++) {
+            HexTile mineTile = unrevealedMines.get(i);
+            PauseTransition delay = new PauseTransition(Duration.millis(100 * (i + 1)));
+            delay.setOnFinished(e -> { mineTile.revealMine(); });
+            delay.play();
+        }
+
+        // Show win text after all mines are revealed
+        double totalAnimationTime = unrevealedMines.size() * 100 + 300;
+        PauseTransition showOverlay = new PauseTransition(Duration.millis(totalAnimationTime));
+        showOverlay.setOnFinished(e -> {
+            app.showGameOverOverlay(true);
+        });
+        showOverlay.play();
+    }
 }

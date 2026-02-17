@@ -8,7 +8,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.input.MouseButton;
 
 public class HexTile extends Group {
     private HexGrid grid;
@@ -56,11 +55,9 @@ public class HexTile extends Group {
 
         getChildren().addAll(hex, label);
 
-
-        
         Image flagImg = new Image(getClass().getResourceAsStream("/minesweeper/flag.png"));
         flagImage = new ImageView(flagImg);
-        flagImage.setFitWidth(20);  // Adjust size as needed
+        flagImage.setFitWidth(20);
         flagImage.setFitHeight(20);
         flagImage.setLayoutX(xCenter - 10);
         flagImage.setLayoutY(yCenter - 10);
@@ -77,8 +74,6 @@ public class HexTile extends Group {
         });
     }
 
-    // All of these methods pertain to the function of mines, (grey is safe/ red is
-    // "exploding")
     public void reveal() {
         grid.handleFirstClick(this);
         if (reveal || flagged) return;
@@ -97,6 +92,19 @@ public class HexTile extends Group {
         } else {
             zeroReveal();
         }
+
+        // Check win condition after revealing
+        grid.checkWinCondition();
+    }
+
+    // New method to reveal mines during animation
+    public void revealMine() {
+        if (reveal) return;
+        reveal = true;
+
+        if (hasMine()) {
+            hex.setFill(Color.RED);
+        }
     }
 
     public void placeMine(Mine m) {
@@ -113,9 +121,9 @@ public class HexTile extends Group {
 
     // reveal of zeroes
     private void zeroReveal() {
-        for (HexTile aTile : grid.getAdjacent(this)) {
-            if (!aTile.isRevealed() && !aTile.hasMine() && !aTile.isFlagged()) {
-                aTile.reveal();
+        for (HexTile tile : grid.getAdjacent(this)) {
+            if (!tile.isRevealed() && !tile.hasMine() && !tile.isFlagged()) {
+                tile.reveal();
             }
         }
     }
