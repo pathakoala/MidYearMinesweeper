@@ -76,9 +76,8 @@ public class HexTile extends Group {
     // All of these methods pertain to the function of mines, (grey is safe/ red is
     // "exploding")
     public void reveal() {
+        grid.handleFirstClick(this);
         if (reveal || flagged) return;
-        if (reveal)
-            return;
         reveal = true;
 
         if (hasMine()) {
